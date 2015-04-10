@@ -15,8 +15,7 @@ HGLRC SetUpOpenGL( HWND hWnd );
 #define DEFAULT_PIVOT_HORIZ_ANGLE	0
 #define DEFAULT_PIVOT_X				0
 #define DEFAULT_PIVOT_Y				0
-
-
+GLfloat move = -15;
 float z_dist=DEFAULT_Z_DIST;						// INSERT, PAGE UP
 float pivot_vert_angle=DEFAULT_PIVOT_VERT_ANGLE;	// UP, DOWN
 float pivot_horiz_angle=DEFAULT_PIVOT_HORIZ_ANGLE;	// LEFT, RIGHT
@@ -36,9 +35,74 @@ void kregiel(void);
 
 //******** Fukcje skladowe ********************************
 
+/*void szescian(void)
+{
+	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	{
+		// Parametry wierzcholkow
+
+	GLfloat sa[3]={0.0f,0.0f,0.0f};
+	GLfloat sb[3]={1.0f,0.0f,0.0f};
+	GLfloat sc[3]={1.0f,1.0f,0.0f};
+	GLfloat sd[3]={0.0f,1.0f,0.0f};
+	GLfloat se[3]={0.0f,0.0f,-1.0f};
+	GLfloat sf[3]={1.0f,0.0f,-1.0f};
+	GLfloat sg[3]={1.0f,1.0f,-1.0f};
+	GLfloat sh[3]={0.0f,1.0f,-1.0f};
+	
+	// Sciany skladowe
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_POLYGON);
+		glVertex3fv(sa);
+		glVertex3fv(sb);
+		glVertex3fv(sc);
+		glVertex3fv(sd);
+	glEnd();
+
+		glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_POLYGON);
+		glVertex3fv(sb);
+		glVertex3fv(sf);
+		glVertex3fv(sg);
+		glVertex3fv(sc);
+	glEnd();
+
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glBegin(GL_POLYGON);
+		glVertex3fv(sf);
+		glVertex3fv(se);
+		glVertex3fv(sh);
+		glVertex3fv(sg);
+	glEnd();
+
+		glColor3f(1.0f, 1.0f, 0.0f);
+	glBegin(GL_POLYGON);
+		glVertex3fv(se);
+		glVertex3fv(sa);
+		glVertex3fv(sd);
+		glVertex3fv(sh);
+	glEnd();
+
+		glColor3f(0.0f, 1.0f, 1.0f);
+	glBegin(GL_POLYGON);
+		glVertex3fv(sd);
+		glVertex3fv(sc);
+		glVertex3fv(sg);
+		glVertex3fv(sh);
+	glEnd();
+
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glBegin(GL_POLYGON);
+		glVertex3fv(sa);
+		glVertex3fv(sb);
+		glVertex3fv(sf);
+		glVertex3fv(se);
+	glEnd();
+	}
+}*/
 void kula(void)
 {
-	glTranslatef(2.0, 1.0, -10.0);
+	
 	GLUquadric *kulka = gluNewQuadric();
 	glColor3f(1.0f, 0, 0);
 	glBegin(GL_QUAD_STRIP);
@@ -607,6 +671,7 @@ LONG WINAPI WndProc(HWND hWnd,
 					break;
 
 				// obrot w poziomie
+				
 				case VK_RIGHT:
 					pivot_horiz_angle+=5;
 					if (pivot_horiz_angle>=360)
@@ -619,7 +684,14 @@ LONG WINAPI WndProc(HWND hWnd,
 						pivot_horiz_angle+=360;
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
-
+					
+				//ruch kuli
+				case VK_ADD:
+					move++;
+					break;
+				case VK_SUBTRACT:
+					move--;
+					break;
 				// przesuniecia w poziomie
 				case VK_NEXT:
 					if ((pivot_x+change)<400)
@@ -730,6 +802,8 @@ HGLRC SetUpOpenGL( HWND hWnd )
 
 void DrawOpenGLScene( )
 {
+	
+
 	GLfloat position[4]={10.0f, 10.0, 100.0f, 0.0f};
     
 	// flagi czynnosci pomocniczych
@@ -763,12 +837,17 @@ void DrawOpenGLScene( )
 	glPushMatrix();
 		//szescian !!!!!!!!!!!!!!!!!!!!!!!!!!
 		//szescian();
+	glPushMatrix();
+		glTranslatef(2.0, 1.0, move);// sterowanie kula + -
+			kula();
+	glPopMatrix();
 		kregiel();
 		siatka();
-		kula();
 		//szescian3();
 		//szescian4();
 	glPopMatrix();
-
+	
     glFlush ();
+	//glutMainLoop();
+	//glutPostRedisplay();
 }
