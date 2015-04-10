@@ -467,7 +467,7 @@ void kregiel(void)
 }
 void siatka (void)
 {
-	double i;
+        int i;
 	glColor3f(.3,.3,.3);
 glBegin(GL_QUADS);
 glVertex3f( -1,-0.001, 1);
@@ -477,16 +477,46 @@ glVertex3f(7,-0.001,1);
 glEnd();
 
 glBegin(GL_LINES);
-for(i=0;i<=2;i++) {
-    if (i==-1) { glColor3f(.6,.3,.3); } else { glColor3f(.25,.25,.25); };
-    glVertex3f(i,0,1);
-    glVertex3f(i,0,-17);
+for(i=0;i<=7;i++) {	
+    if (i==0) { 
+		glColor3f(.8,.3,.3);
+		glVertex3f(-1,0,1);
+		glVertex3f(-1,0,-17);
+		i++;
+	}
+	if(i>0&&i<7){
+		glColor3f(.25,.25,.25);
+		glVertex3f(i,0,1);
+		glVertex3f(i,0,-17);
+	}
+	if (i==7) { 
+		glColor3f(.8,.3,.3);
+		glVertex3f(7,0,1);
+		glVertex3f(7,0,-17);
+		i++;
+	}
+	i++;
 }
-for(i=0;i<=6;i++) {
-    if (i==-1) { glColor3f(.3,.3,.6); } else { glColor3f(.25,.25,.25); };
-    glVertex3f(-1,0,-i);
-    glVertex3f(7,0,-i);
+for(i=0;i<=17;i++) {
+    if (i==0) { 
+		glColor3f(.8,.3,.3);
+		glVertex3f(-1,0,1);
+		glVertex3f(7,0,1);
+		i++;
+	}
+	if(i>0&&i<17){
+		glColor3f(.25,.25,.25);
+		glVertex3f(-1,0,-i);
+		glVertex3f(7,0,-i);
+	}
+	if(i==17){
+		glColor3f(.8,.3,.3);
+		glVertex3f(-1,0,-17);
+		glVertex3f(7,0,-17);
+	}
+	i++;
 };
+
 glEnd();
 }
 
