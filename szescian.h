@@ -5,3 +5,10 @@
 #include <GL/glu.h>    // biblioteka dodatkowych narzedzi dla OpenGL  
 //#include <GL/glaux.h>  // biblioteka wspierajaca OpenGL
 #include <math.h>	   // biblioteka matematyczna
+#include <glm/glm.hpp> //opengl math
+#include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#include <map>
