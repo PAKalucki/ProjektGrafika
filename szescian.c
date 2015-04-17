@@ -15,7 +15,8 @@ HGLRC SetUpOpenGL( HWND hWnd );
 #define DEFAULT_PIVOT_HORIZ_ANGLE	0
 #define DEFAULT_PIVOT_X				0
 #define DEFAULT_PIVOT_Y				0
-GLfloat move = -15;
+GLfloat move = -18;
+GLfloat move2 = 0;
 float z_dist=DEFAULT_Z_DIST;						// INSERT, PAGE UP
 float pivot_vert_angle=DEFAULT_PIVOT_VERT_ANGLE;	// UP, DOWN
 float pivot_horiz_angle=DEFAULT_PIVOT_HORIZ_ANGLE;	// LEFT, RIGHT
@@ -34,441 +35,50 @@ void kregiel(void);
 // ..............................
 
 //******** Fukcje skladowe ********************************
-
-/*void szescian(void)
+void draw(ObjModel *model)
 {
-	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+int i,j;
+if (model != NULL)
 	{
-		// Parametry wierzcholkow
-
-	GLfloat sa[3]={0.0f,0.0f,0.0f};
-	GLfloat sb[3]={1.0f,0.0f,0.0f};
-	GLfloat sc[3]={1.0f,1.0f,0.0f};
-	GLfloat sd[3]={0.0f,1.0f,0.0f};
-	GLfloat se[3]={0.0f,0.0f,-1.0f};
-	GLfloat sf[3]={1.0f,0.0f,-1.0f};
-	GLfloat sg[3]={1.0f,1.0f,-1.0f};
-	GLfloat sh[3]={0.0f,1.0f,-1.0f};
-	
-	// Sciany skladowe
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glBegin(GL_POLYGON);
-		glVertex3fv(sa);
-		glVertex3fv(sb);
-		glVertex3fv(sc);
-		glVertex3fv(sd);
-	glEnd();
-
-		glColor3f(0.0f, 1.0f, 0.0f);
-	glBegin(GL_POLYGON);
-		glVertex3fv(sb);
-		glVertex3fv(sf);
-		glVertex3fv(sg);
-		glVertex3fv(sc);
-	glEnd();
-
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glBegin(GL_POLYGON);
-		glVertex3fv(sf);
-		glVertex3fv(se);
-		glVertex3fv(sh);
-		glVertex3fv(sg);
-	glEnd();
-
-		glColor3f(1.0f, 1.0f, 0.0f);
-	glBegin(GL_POLYGON);
-		glVertex3fv(se);
-		glVertex3fv(sa);
-		glVertex3fv(sd);
-		glVertex3fv(sh);
-	glEnd();
-
-		glColor3f(0.0f, 1.0f, 1.0f);
-	glBegin(GL_POLYGON);
-		glVertex3fv(sd);
-		glVertex3fv(sc);
-		glVertex3fv(sg);
-		glVertex3fv(sh);
-	glEnd();
-
-	glColor3f(1.0f, 0.0f, 1.0f);
-	glBegin(GL_POLYGON);
-		glVertex3fv(sa);
-		glVertex3fv(sb);
-		glVertex3fv(sf);
-		glVertex3fv(se);
-	glEnd();
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		{
+		glColor3f(0.0f,0.0f,0.0f);
+		for(i=0;i<model->NumTriangle;i++)
+		{
+		glBegin(GL_TRIANGLES);
+			for(j=0;j<3;j++)
+			{
+			glVertex3f(model->VertexArray[model->TriangleArray[i].Vertex[j]-1].X,model->VertexArray[model->TriangleArray[i].Vertex[j]-1].Y,model->VertexArray[model->TriangleArray[i].Vertex[j]-1].Z);
+			}
+			glEnd();
+		}
+		}
 	}
-}*/
-void kula(void)
-{
-	
-	GLUquadric *kulka = gluNewQuadric();
-	glColor3f(1.0f, 0, 0);
-	glBegin(GL_QUAD_STRIP);
-	
-	gluSphere(kulka, 1.0, 50, 50);
-	
-	glEnd();
-	
 }
-
-
-void kregiel(void)
+void kolizja(float p1_x, float p1_y, float p1_z, float p2_x, float p2_y, float p2_z)
 {
-	int i;
-	double angle;
-	GLint circle_points=100;
-	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-	{
-		// Parametry wierzcholkow podstawy
+	float dystans=0;
+	float kolor;
 
-	GLfloat pa[3]={0.0f,0.0f,0.0f};
-	GLfloat pb[3]={0.9f,0.0f,0.0f};
-	GLfloat pc[3]={0.9f,2.5f,0.0f};
-	GLfloat pd[3]={0.0f,2.5f,0.0f};
-	GLfloat pe[3]={0.0f,0.0f,-0.9f};
-	GLfloat pf[3]={0.9f,0.0f,-0.9f};
-	GLfloat pg[3]={0.9f,2.5f,-0.9f};
-	GLfloat ph[3]={0.0f,2.5f,-0.9f};
+	dystans = abs(sqrt(pow((p1_x-p2_x),2)+pow((p1_y-p2_y),2)+pow((p1_z-p2_z),2)));
+	if(dystans>=0.8)
+		kolor=0.0;
+	else
+		kolor=10.0;
 
-	GLfloat pi[3]={-0.1864f,0.0f,-0.45f};
-	GLfloat pj[3]={-0.14519f,0.0f,-0.225f};
-	GLfloat pk[3]={-0.14519f,0.0f,-0.675f};
-	GLfloat pl[3]={1.0864f,0.0f,-0.45f};
-	GLfloat pm[3]={1.04519f,0.0f,-0.225f};
-	GLfloat pn[3]={1.04519f,0.0f,-0.675f};
-	GLfloat po[3]={0.45f,0.0f,0.1864f};
-	GLfloat pp[3]={0.225f,0.0f,0.14519f};
-	GLfloat pr[3]={0.675f,0.0f,0.14519f};
-	GLfloat ps[3]={0.45f,0.0f,-1.0864f};
-	GLfloat pt[3]={0.225f,0.0f,-1.04519f};
-	GLfloat pu[3]={0.675f,0.0f,-1.04519f};
-
-	GLfloat pi1[3]={-0.1864f,2.5f,-0.45f};
-	GLfloat pj1[3]={-0.14519f,2.5f,-0.225f};
-	GLfloat pk1[3]={-0.14519f,2.5f,-0.675f};
-	GLfloat pl1[3]={1.0864f,2.5f,-0.45f};
-	GLfloat pm1[3]={1.04519f,2.5f,-0.225f};
-	GLfloat pn1[3]={1.04519f,2.5f,-0.675f};
-	GLfloat po1[3]={0.45f,2.5f,0.1864f};
-	GLfloat pp1[3]={0.225f,2.5f,0.14519f};
-	GLfloat pr1[3]={0.675f,2.5f,0.14519f};
-	GLfloat ps1[3]={0.45f,2.5f,-1.0864f};
-	GLfloat pt1[3]={0.225f,2.5f,-1.04519f};
-	GLfloat pu1[3]={0.675f,2.5f,-1.04519f};
-
-	// Parametry wierzcholkow czesci srodkowej
-
-	GLfloat sa[3]={0.0f,2.5f,-0.0f};
-	GLfloat sb[3]={0.9f,2.5f,-0.0f};
-	GLfloat sc[3]={0.9f,3.7f,-0.0f};
-	GLfloat sd[3]={0.0f,3.7f,-0.0f};
-	GLfloat se[3]={0.0f,2.5f,-0.9f};
-	GLfloat sf[3]={0.9f,2.5f,-0.9f};
-	GLfloat sg[3]={0.9f,3.7f,-0.9f};
-	GLfloat sh[3]={0.0f,3.7f,-0.9f};
-
-	// Parametry wierzcholkow czesci gornej
- 
-	GLfloat ga[3]={0.0f,3.7f,-0.0f};
-	GLfloat gb[3]={0.9f,3.7f,-0.0f};
-	GLfloat gc[3]={0.6f,4.5f,-0.3f};
-	GLfloat gd[3]={0.3f,4.5f,-0.3f};
-	GLfloat ge[3]={0.0f,3.7f,-0.9f};
-	GLfloat gf[3]={0.9f,3.7f,-0.9f};
-	GLfloat gg[3]={0.6f,4.5f,-0.6f};
-	GLfloat gh[3]={0.3f,4.5f,-0.6f};
-
-		glColor3f(1.0f, 1.0f, 1.0f);//podstawa gorna
+	glColor3f(kolor, kolor, kolor);
 	glBegin(GL_POLYGON);
-		glVertex3fv(pd);
-		glVertex3fv(pj1);
-		glVertex3fv(pi1);
-		glVertex3fv(pk1);
-		glVertex3fv(ph);
-		glVertex3fv(pt1);
-		glVertex3fv(ps1);
-		glVertex3fv(pu1);
-		glVertex3fv(pg);		
-		glVertex3fv(pn1);
-		glVertex3fv(pl1);
-		glVertex3fv(pm1);
-		glVertex3fv(pc);
-		glVertex3fv(pr1);
-		glVertex3fv(po1);
-		glVertex3fv(pp1);
+		glVertex3f(1.0f,0.0f,-20.0f);
+		glVertex3f(1.0f,1.0f,-20.0f);
+		glVertex3f(-1.0f,1.0f,-20.0f);
+		glVertex3f(-1.0f,0.0f,-20.0f);
 	glEnd();
 
-	glColor3f(1.0f, 0.0f, 1.0f);//podstawa dolna
-	glBegin(GL_POLYGON);
-		glVertex3fv(pa);
-		glVertex3fv(pj);
-		glVertex3fv(pi);
-		glVertex3fv(pk);
-		glVertex3fv(pe);
-		glVertex3fv(pt);
-		glVertex3fv(ps);
-		glVertex3fv(pu);
-		glVertex3fv(pf);		
-		glVertex3fv(pn);
-		glVertex3fv(pl);
-		glVertex3fv(pm);
-		glVertex3fv(pb);
-		glVertex3fv(pr);
-		glVertex3fv(po);
-		glVertex3fv(pp);
-	glEnd();
-	glColor3f(1.0f, 0.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pa);		
-		glVertex3fv(pj);
-		glVertex3fv(pj1);
-		glVertex3fv(pd);
-	glEnd();
-	glColor3f(1.0f, 0.0f, 1.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pj);
-		glVertex3fv(pi);
-		glVertex3fv(pi1);
-		glVertex3fv(pj1);
-		
-	glEnd();
-	glColor3f(1.0f, 1.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pi);
-		glVertex3fv(pk);
-		glVertex3fv(pk1);
-		glVertex3fv(pi1);
-		
-	glEnd();
-	glColor3f(0.0f, 0.0f, 1.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pk);
-		glVertex3fv(pe);
-		glVertex3fv(ph);
-		glVertex3fv(pk1);
-		
-	glEnd();
-	glColor3f(1.0f, 0.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pe);
-		glVertex3fv(pt);
-		glVertex3fv(pt1);
-		glVertex3fv(ph);
-		
-	glEnd();
-	glColor3f(1.0f, 0.0f, 1.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pt);
-		glVertex3fv(ps);
-		glVertex3fv(ps1);
-		glVertex3fv(pt1);
-		
-	glEnd();
-	glColor3f(0.0f, 1.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(ps);
-		glVertex3fv(pu);
-		glVertex3fv(pu1);
-		glVertex3fv(ps1);
-		
-	glEnd();
-	glColor3f(1.0f, 0.0f, 1.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pu);
-		glVertex3fv(pf);
-		glVertex3fv(pg);
-		glVertex3fv(pu1);
-		
-	glEnd();
-	glColor3f(1.0f, 1.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pf);
-		glVertex3fv(pn);
-		glVertex3fv(pn1);
-		glVertex3fv(pg);
-		
-	glEnd();
-	glColor3f(1.0f, 0.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pn);
-		glVertex3fv(pl);
-		glVertex3fv(pl1);
-		glVertex3fv(pn1);
-		
-	glEnd();
-	glColor3f(1.0f, 1.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pl);
-		glVertex3fv(pm);
-		glVertex3fv(pm1);
-		glVertex3fv(pl1);
-		
-	glEnd();
-	glColor3f(1.0f, 1.0f, 1.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pm);
-		glVertex3fv(pb);
-		glVertex3fv(pc);
-		glVertex3fv(pm1);
-		
-	glEnd();
-	glColor3f(1.0f, 0.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pb);
-		glVertex3fv(pr);
-		glVertex3fv(pr1);
-		glVertex3fv(pc);
-		
-	glEnd();
-	glColor3f(1.0f, 0.0f, 1.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pr);
-		glVertex3fv(po);
-		glVertex3fv(po1);
-		glVertex3fv(pr1);
-		
-	glEnd();
-	glColor3f(1.0f, 1.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(po);
-		glVertex3fv(pp);
-		glVertex3fv(pp1);
-		glVertex3fv(po1);
-		
-	glEnd();
-	glColor3f(1.0f, 0.0f, 0.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(pp);
-		glVertex3fv(pa);
-		glVertex3fv(pd);
-		glVertex3fv(pp1);
-		
-	glEnd();
-	// Sciany skladowe czesci srodkowej
-	glColor3f(1.0f, 1.0f, 0.0f);
-	glBegin(GL_POLYGON); //sciana przednia
-		glVertex3fv(sa);
-		glVertex3fv(sb);
-		glVertex3fv(sc);
-		glVertex3fv(sd);
-	glEnd();
-
-		glColor3f(0.0f, 1.0f, 0.0f);//sciana prawa
-	glBegin(GL_POLYGON);
-		glVertex3fv(sb);
-		glVertex3fv(sf);
-		glVertex3fv(sg);
-		glVertex3fv(sc);
-	glEnd();
-
-	glColor3f(1.0f, 1.0f, 0.0f);//sciana tylna
-	glBegin(GL_POLYGON);
-		glVertex3fv(sf);
-		glVertex3fv(se);
-		glVertex3fv(sh);
-		glVertex3fv(sg);
-	glEnd();
-
-		glColor3f(1.0f, 0.0f, 0.0f);//sciana lewa
-	glBegin(GL_POLYGON);
-		glVertex3fv(se);
-		glVertex3fv(sa);
-		glVertex3fv(sd);
-		glVertex3fv(sh);
-	glEnd();
-
-		glColor3f(0.0f, 0.0f, 1.0f);//podstawa gorna
-	glBegin(GL_POLYGON);
-		glVertex3fv(sd);
-		glVertex3fv(sc);
-		glVertex3fv(sg);
-		glVertex3fv(sh);
-	glEnd();
-
-	glColor3f(1.0f, 1.0f, 1.0f);//podstawa dolna
-	glBegin(GL_POLYGON);
-		glVertex3fv(sa);
-		glVertex3fv(sb);
-		glVertex3fv(sf);
-		glVertex3fv(se);
-	glEnd();
-/*
-	// sciany skladowe czesci gornej
-	glColor3f(1.0f, 0.0f, 1.0f);//sciana przednia
-	glBegin(GL_POLYGON);
-		glVertex3fv(ga);
-		glVertex3fv(gb);
-		glVertex3fv(gc);
-		glVertex3fv(gd);
-	glEnd();
-
-		glColor3f(1.0f, 0.0f, 0.0f);//sciana prawa
-	glBegin(GL_POLYGON);
-		glVertex3fv(gb);
-		glVertex3fv(gf);
-		glVertex3fv(gg);
-		glVertex3fv(gc);
-	glEnd();
-
-	glColor3f(1.0f, 0.0f, 1.0f);//sciana tylna
-	glBegin(GL_POLYGON);
-		glVertex3fv(gf);
-		glVertex3fv(ge);
-		glVertex3fv(gh);
-		glVertex3fv(gg);
-	glEnd();
-
-		glColor3f(0.0f, 0.0f, 1.0f);//sciana lewa
-	glBegin(GL_POLYGON);
-		glVertex3fv(ge);
-		glVertex3fv(ga);
-		glVertex3fv(gd);
-		glVertex3fv(gh);
-	glEnd();
-
-		glColor3f(0.0f, 1.0f, 1.0f);//podstawa gorna
-	glBegin(GL_POLYGON);
-		glVertex3fv(gd);
-		glVertex3fv(gc);
-		glVertex3fv(gg);
-		glVertex3fv(gh);
-	glEnd();
-
-	glColor3f(1.0f, 0.0f, 0.0f);//podstawa dolna
-	glBegin(GL_POLYGON);
-		glVertex3fv(ga);
-		glVertex3fv(gb);
-		glVertex3fv(gf);
-		glVertex3fv(ge);
-	glEnd();*/
-	}
-	/*
-	glBegin (GL_LINE_LOOP);
-	for(i=0;i<circle_points;i++)
-	{
-		angle = 2*3.1415*i/circle_points;
-		glVertex3f(cos(angle)+0.45,sin(angle)+4.6,-0.45f);
-	}
-	glEnd();
-	*/
-
-//kula na górze
-	glPushMatrix();
-	glTranslatef(0.5, 4.3, -0.45f);
-	GLUquadric *kulka = gluNewQuadric();
-	glColor3f(1.0f, 0, 0);
-	glBegin(GL_QUAD_STRIP);
-	gluSphere(kulka, 0.7, 50, 50);
-	
-	glEnd();
-	glPopMatrix();
 }
 void siatka (void)
 {
         int i;
-	glColor3f(.3,.3,.3);
+	glColor3f(.8,.8,.8);
 glBegin(GL_QUADS);
 glVertex3f( -1,-0.001, 1);
 glVertex3f( -1,-0.001,-17);
@@ -519,7 +129,19 @@ for(i=0;i<=17;i++) {
 
 glEnd();
 }
-
+int random(int min, int max)
+{
+    int tmp;
+    if (max>=min)
+        max-= min;
+    else
+    {
+        tmp= min - max;
+        min= max;
+        max= tmp;
+    }
+    return max ? (rand() % max + min) : min;
+}
 //******************************************************** 
 //  Glowna funkcja WINDOWS
 //******************************************************** 
@@ -716,11 +338,40 @@ LONG WINAPI WndProc(HWND hWnd,
 					break;
 					
 				//ruch kuli
-				case VK_ADD:
-					move++;
+
+				case 0x57: //przod
+					if(move<0)
+						move+=0.25;
+					if(move>0)
+						move=0;
+					move+=0.25;
+					InvalidateRect(hWnd, NULL, FALSE);
 					break;
-				case VK_SUBTRACT:
-					move--;
+
+				case 0x53: //tyl
+					if(move>-17)
+						move-=0.25;
+					if(move<-17)
+						move=-17;
+					move-=0.25;
+					InvalidateRect(hWnd, NULL, FALSE);
+					
+					break;
+				case 0x41:
+					if(move2<7)
+						move2+=0.25;
+					if(move2>7)
+						move2=7;
+					move2+=0.25;
+					InvalidateRect(hWnd, NULL, FALSE);
+					break;
+				case 0x44:
+					if(move2>-1)
+						move2-=0.25;
+					if(move2<-1)
+						move2=-1;
+					move2-=0.25;
+					InvalidateRect(hWnd, NULL, FALSE);
 					break;
 				// przesuniecia w poziomie
 				case VK_NEXT:
@@ -728,7 +379,7 @@ LONG WINAPI WndProc(HWND hWnd,
 						pivot_x+=change;
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
-				case VK_DELETE:
+				case VK_PRIOR:
 					if ((pivot_x-change)>-400)
 						pivot_x-=change;
 					InvalidateRect(hWnd, NULL, FALSE);
@@ -752,7 +403,7 @@ LONG WINAPI WndProc(HWND hWnd,
 						z_dist+=change;
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
-				case VK_PRIOR:
+				case VK_DELETE:
 					if ((z_dist-change)>1)
 						z_dist-=change;
 					InvalidateRect(hWnd, NULL, FALSE);
@@ -832,8 +483,14 @@ HGLRC SetUpOpenGL( HWND hWnd )
 
 void DrawOpenGLScene( )
 {
-	
-
+	char * memory;
+	size_t bytes;
+	char * memory2;
+	size_t bytes2;
+	ObjModel* kulaobj;
+	ObjModel* kregielobj[4];
+	int x;
+	GLfloat p_x=1,zmiana;
 	GLfloat position[4]={10.0f, 10.0, 100.0f, 0.0f};
     
 	// flagi czynnosci pomocniczych
@@ -853,7 +510,12 @@ void DrawOpenGLScene( )
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
 
-    
+    memory=NULL;
+	bytes = ObjLoadFile("kulaopt.obj",&memory);
+	kulaobj = ObjLoadModel(memory,bytes);
+	bytes2 = ObjLoadFile("kregielobj.obj",&memory2);
+	for(x=0;x<4;x++)
+		kregielobj[x] = ObjLoadModel(memory2,bytes2);
     // transformacja obserwacji
     
     glMatrixMode( GL_MODELVIEW );
@@ -863,20 +525,36 @@ void DrawOpenGLScene( )
   	glTranslatef( pivot_x, pivot_y, -z_dist );
 	glRotatef(pivot_vert_angle, 1, 0, 0);
 	glRotatef(pivot_horiz_angle, 0, 1, 0);
-	
 	glPushMatrix();
-		//szescian !!!!!!!!!!!!!!!!!!!!!!!!!!
-		//szescian();
 	glPushMatrix();
-		glTranslatef(2.0, 1.0, move);// sterowanie kula + -
-			kula();
+	while(1)
+	{
+		move=move+0.00001;
+		zmiana=random(0,1);
+		if(zmiana==0&&move<=7)
+			move2+=0.1;
+		else
+			if(move2>=-1)
+				move2-=0.1;
+		if(move>=0)
+			break;
+		glTranslatef(move2, -0.14, move);// sterowanie kula + -	
+	}
 	glPopMatrix();
-		kregiel();
-		siatka();
-		//szescian3();
-		//szescian4();
+	glTranslatef(0.35, 0.08, 0.14);
+	for(x=0;x<4;x++)
+	{
+		if(p_x==1)
+			p_x=0;
+		else
+			glTranslatef(2,0,0);
+		draw(kregielobj[x]);
+	}
 	glPopMatrix();
-	
+	glPushMatrix();
+		kolizja(move2,0.5,move,0.2,0.5,0.14);
+	glPopMatrix();
+	siatka();
     glFlush ();
 	//glutMainLoop();
 	//glutPostRedisplay();
