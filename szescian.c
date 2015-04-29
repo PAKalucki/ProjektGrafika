@@ -15,12 +15,14 @@ HGLRC SetUpOpenGL(HWND hWnd);
 #define DEFAULT_PIVOT_HORIZ_ANGLE	0
 #define DEFAULT_PIVOT_X				0
 #define DEFAULT_PIVOT_Y				0
+#define IDM_RED 0
+#define IDM_FALL 1
 float z_dist = DEFAULT_Z_DIST;						// INSERT, PAGE UP
 float pivot_vert_angle = DEFAULT_PIVOT_VERT_ANGLE;	// UP, DOWN
 float pivot_horiz_angle = DEFAULT_PIVOT_HORIZ_ANGLE;	// LEFT, RIGHT
 float pivot_x = DEFAULT_PIVOT_X;						// DELETE, PAGE DOWN
 float pivot_y = DEFAULT_PIVOT_Y;						// HOME, END
-
+int collisionEvent;
 int speed = 100;
 
 //kolizje
@@ -246,68 +248,34 @@ void siatka(void)
 	glVertex3f(7, -0.55, -25);
 	glVertex3f(7, -0.55, 1);
 	glEnd();
-	/*
-	glBegin(GL_LINES);
-	for (i = 0; i <= 7; i++) {
-		if (i == 0) {
-			glColor3f(.8, .3, .3);
-			glVertex3f(-1, -0.99, 1);
-			glVertex3f(-1, -0.99, -17);
-			i++;
-		}
-		if (i>0 && i<7){
-			glColor3f(.25, .25, .25);
-			glVertex3f(i, -0.99, 1);
-			glVertex3f(i, -0.99, -17);
-		}
-		if (i == 7) {
-			glColor3f(.8, .3, .3);
-			glVertex3f(7, -0.99, 1);
-			glVertex3f(7, -0.99, -17);
-			i++;
-		}
-		i++;
-	}
-	for (i = 0; i <= 17; i++) {
-		if (i == 0) {
-			glColor3f(.8, .3, .3);
-			glVertex3f(-1, -0.99, 1);
-			glVertex3f(7, -0.99, 1);
-			i++;
-		}
-		if (i>0 && i<17){
-			glColor3f(.25, .25, .25);
-			glVertex3f(-1, -0.99, -i);
-			glVertex3f(7, -0.99, -i);
-		}
-		if (i == 17){
-			glColor3f(.8, .3, .3);
-			glVertex3f(-1, -0.99, -17);
-			glVertex3f(7, -0.99, -17);
-		}
-		i++;
-	};
-	*/
+
 	glEnd();
 }
 int random(int min, int max)
 {
-	/*
-	int tmp;
-	if (max >= min)
-		max -= min;
-	else
-	{
-		tmp = min - max;
-		min = max;
-		max = tmp;
-	}
-	*/
 	return rand() % ((max - min) + 1) + min;
 }
+//menu
+void AddMenus(HWND hwnd)
+{
+	HMENU hMenubar;
+	HMENU hMenu;
+
+	hMenubar = CreateMenu();
+	hMenu = CreateMenu();
+
+	AppendMenuW(hMenu, MF_STRING, IDM_RED, L"&Czerwone");
+	AppendMenuW(hMenu, MF_STRING, IDM_FALL, L"&Przewracanie");
+
+	AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&Kolizja");
+	SetMenu(hwnd, hMenubar);
+}
+
+
+
 //******************************************************** 
 //  Glowna funkcja WINDOWS
-//******************************************************** 
+//********************************************************
 
 int WINAPI WinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
@@ -407,9 +375,22 @@ LONG WINAPI WndProc(HWND hWnd,
 	{
 	case WM_CREATE:
 		hRC = SetUpOpenGL(hWnd);
+		AddMenus(hWnd);
 		SetTimer(hWnd, 101, speed, NULL);
 		// Inicjalizacja OpenGL
 		return 0;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam)) 
+		{
+		case IDM_RED:
+			collisionEvent = 0;
+			break;
+		case IDM_FALL:
+			collisionEvent = 1;
+			break;
+		}
+		break;
 
 	case WM_TIMER:
 		if (posz<0)
@@ -674,18 +655,6 @@ void DrawOpenGLScene()
 
 	//.........................................................................
 	GLUquadricObj *quadric1 = gluNewQuadric();
-
-	//model kolizji kregla
-	/*
-	GLfloat s1[3] = { 0.0f, -0.5f, 0.0f };
-	GLfloat s2[3] = {0.35f,-0.5f,0.0f};
-	GLfloat s3[3] = {0.0f,-0.5f,0.35f};
-	GLfloat s4[3] = {0.35f,-0.5f,0.35f};
-	GLfloat s5[3] = {0.0f,1.6f,0.0f};
-	GLfloat s6[3] = { 0.35f, 1.6f,0.0f};
-	GLfloat s7[3] = {0.0f,1.6f,0.35f};
-	GLfloat s8[3] = {0.35f,1.6f,0.35f};
-	*/
 	// flagi czynnosci pomocniczych
 
 	glEnable(GL_DEPTH_TEST);
@@ -741,8 +710,10 @@ void DrawOpenGLScene()
 	glPushMatrix();
 	if (kolizja_1kregiel() == 1)
 	{
-		glRotatef(90, 1, 0, 0);
-		glColor3f(1, 0, 0);
+		if (collisionEvent == 1)
+			glRotatef(90, 1, 0, 0);
+		else
+			glColor3f(1, 0, 0);
 	}
 	draw(kregielobj);
 	glPopMatrix();
@@ -856,13 +827,9 @@ void DrawOpenGLScene()
 	glPopMatrix();
 	glPopMatrix();
 
-
-
 	glPushMatrix();
 	siatka();
 	glPopMatrix();
 	glFlush();
 	gluDeleteQuadric(quadric1);
-	//glutMainLoop();
-	//glutPostRedisplay();
 }
